@@ -80,7 +80,6 @@ router.delete('/:moodId', verifyToken, async (req, res) => {
             return res.status(404).json({ err:'Mood not found' })
         }
 
-
         if(!req.user || !mood.author.equals(req.user._id)) {
             return res.status(403).json({ message:'You are not authorized!' });
         }
@@ -157,6 +156,32 @@ router.put('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
 
 // DELETE /moods/:moodId/comments/:commentId
 
-router.delete {'/:moodId/comments '}
+router.delete('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
+    try {
+
+        const mood = await Mood.findById(req.params.moodId);
+
+        if(!mood) {
+            return res.status(404).json({ err: 'Mood not found' });
+        }
+
+        const comment = mood.comments.id(req.params.commentId);
+
+        if (!comment) {
+            return res.status(404).json({ err: 'Comment not found' });
+        }
+
+        if(comment.author.toString() !== req.user._id) {
+            return res.status(403).json({ message:'You are not authorized to edit this comment' });
+        }
+
+        mood.comments.pull(req.params.commentId);
+        await mood.save();
+
+        res.status(200).json({ message: 'Comment deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+})
 
 module.exports = router
