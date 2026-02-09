@@ -73,13 +73,6 @@ router.put('/:moodId', verifyToken, async(req, res) => {
 // DELETE /mood/:moodId
 router.delete('/:moodId', verifyToken, async (req, res) => {
     try {
-<<<<<<< create-show
-    await Mood.findByIdAndDelete(req.params.moodId);
-    res.redirect('/moods');
-} catch (err) {
-    res.redirect('/moods')
-}
-=======
 
         const mood = await Mood.findById(req.params.moodId);
 
@@ -97,7 +90,7 @@ router.delete('/:moodId', verifyToken, async (req, res) => {
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
->>>>>>> main
+
 });
 
 
