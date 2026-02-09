@@ -3,21 +3,15 @@ const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
 const app = express();
-const mongoose = require('mongoose');
+
 const cors = require('cors');
 const logger = require('morgan');
 
 // Import routers
 const authRouter = require('./controllers/auth');
-const testJwtRouter = require('./controllers/test-jwt');
 const usersRouter = require('./controllers/users');
+require('./middleware/connection')
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI);
-
-mongoose.connection.on('connected', () => {
-  console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
-});
 
 // Middleware
 app.use(cors());
