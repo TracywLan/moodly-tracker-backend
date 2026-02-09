@@ -17,7 +17,7 @@ const moodSchema = new mongoose.Schema({
     rating: {
         type: Number,
         min: 1,
-        max: 10,
+        max: 5,
         required: true,
     },
     moodLabel: {
@@ -36,9 +36,7 @@ const moodSchema = new mongoose.Schema({
         ],
         default: 'neutral',
     },
-    note: {
-        type: String,
-    },
+    
     // what influenced/related with the mood
     activities: [
         {
@@ -56,11 +54,15 @@ const moodSchema = new mongoose.Schema({
             ]
         }
     ],
+    
+    note: {
+        type: String,
+    },
     author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     comments: [commentSchema],
 },
     { timestamps: true }
 )
 
-const Mood = mongoose.model('Mood',moodSchema)
-module.exports= Mood
+const Mood = mongoose.model('Mood', moodSchema);
+module.exports = Mood;
