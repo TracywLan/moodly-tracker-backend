@@ -10,7 +10,7 @@ const saltRounds = 12;
 router.post('/sign-up', async (req, res) => {
   try {
     const userInDatabase = await User.findOne({ username: req.body.username });
-    
+    console.log("JWT_SECRET",process.env.JWT_SECRET)
     if (userInDatabase) {
       return res.status(409).json({err: 'Username already taken.'});
     }
