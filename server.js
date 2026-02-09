@@ -22,8 +22,10 @@ app.use(express.urlencoded({extended:true}))
 app.use(logger('dev'));
 
 // Routes
+app.get('/', (req, res) => {
+  res.send('Page is running')
+})
 app.use('/auth', authRouter);
-// app.use('/test-jwt', testJwtRouter);
 app.use('/users', usersRouter);
 app.use('/moods',moodRouter)
 
