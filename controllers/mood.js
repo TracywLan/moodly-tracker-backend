@@ -35,6 +35,17 @@ router.get("/:id", async (req,res) => {
 })
 
 
+router.delete('/:moodId', async (req, res) => {
+  try {
+    await Mood.findByIdAndDelete(req.params.moodId);
+    res.redirect('/moods');
+  } catch (err) {
+    console.log(err);
+    res.redirect('/moods');
+  }
+});
+
+
 
 
 
