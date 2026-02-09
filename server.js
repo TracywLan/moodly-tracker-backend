@@ -7,6 +7,7 @@ const app = express();
 const cors = require('cors');
 const logger = require('morgan');
 
+
 // Import routers
 const authRouter = require('./controllers/auth');
 const usersRouter = require('./controllers/users');
