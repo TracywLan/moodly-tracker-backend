@@ -3,6 +3,20 @@ const Mood = require('../models/mood');
 const router = express.Router();
 const verifyToken = require('../middleware/verify-token');
 
+
+//INDEX /moods
+router.get("/",verifyToken,async (req,res)=> {
+    try {
+        const moods = await Mood.find()
+        .populate("author")
+        .populate("comments.author")
+
+        res.json(moods)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: error.message })
+    }
+})
 // CREATE - POST /moods
 router.post('/', verifyToken, async (req,res) => {
     try {
@@ -19,21 +33,7 @@ router.post('/', verifyToken, async (req,res) => {
     }
 })
 
-//SHOW
-router.get("/:id", async (req,res) => {
-    try {
-        const mood = await Mood.findById(req.params.id)
-        .populate("author")
-        .populate("comments.author")
-        if(!mood){
-            return res.status(404).json({ error: "Mood not found "})
-        }
-        res.json(mood);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message })
-    }
-})
+
 
 // GET /moods/:moodId show
 router.get('/:moodId', async (req, res) => {
