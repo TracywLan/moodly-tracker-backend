@@ -5,7 +5,7 @@ const verifyToken = require('../middleware/verify-token');
 
 
 //INDEX /moods
-router.get("/",verifyToken,async (req,res)=> {
+router.get('/', verifyToken, async (req, res)=> {
     try {
         const moods = await Mood.find()
         .populate("author")
@@ -17,8 +17,10 @@ router.get("/",verifyToken,async (req,res)=> {
         res.status(500).json({ error: error.message })
     }
 })
+
+
 // CREATE - POST /moods
-router.post('/', verifyToken, async (req,res) => {
+router.post('/', verifyToken, async (req, res) => {
     try {
         const moodData = {
             ...req.body,
@@ -29,28 +31,28 @@ router.post('/', verifyToken, async (req,res) => {
         res.status(201).json(newMood);
     } catch (error) {
     console.log(error)
-    res.status(400).json({ error: error.message }) 
+        res.status(400).json({ error: error.message }) 
     }
 })
-
 
 
 // GET /moods/:moodId show
 router.get('/:moodId', async (req, res) => {
     try {
        const mood = await Mood.findById(req.params.moodId).populate('author');
-       res.status(200).json(hoot);
+       res.status(200).json(mood);
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
 })
+
 
 // PUT /moods/:moodId update
 router.put('/:moodId', verifyToken, async(req, res) => {
     try {
         const mood = await Mood.findById(req.params.moodId);
 
-        if(!hoot.author.equals(req.user._id)) {
+        if(!mood.author.equals(req.user._id)) {
             return res.status(403).send('You are not allowed to do that')
         }
 
@@ -69,13 +71,36 @@ router.put('/:moodId', verifyToken, async(req, res) => {
 
 
 // DELETE /mood/:moodId
-router.delete('/:moodId', async (req, res) => {
+router.delete('/:moodId', verifyToken, async (req, res) => {
     try {
-    await Mood.findByIdAndDelete(req, params.moodId);
-    res.redirect('/moods');
-} catch (err) {
-    res.redirect('/moods')
-}
+
+        const mood = await Mood.findById(req.params.moodId);
+
+        if(!mood) {
+            return res.status(404).json({ err:'Mood not found' })
+        }
+
+        // --- DEBUG SECTION (Now placed BEFORE the check) ---
+        console.log('--- DEBUGGING AUTH ---');
+        console.log('1. Mood Author ID:', mood.author);
+        console.log('2. User ID (req.user):', req.user);
+        
+        // SAFEGUARDS: Handle missing IDs gracefully to see what's wrong
+        const authorIdString = mood.author ? mood.author.toString() : 'MISSING_AUTHOR';
+        const userIdString = req.user && req.user._id ? req.user._id.toString() : 'MISSING_USER_ID';
+        
+        console.log(`3. Comparing: "${authorIdString}" vs "${userIdString}"`);
+
+        if(!req.user || !mood.author.equals(req.user._id)) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        await mood.deleteOne();
+
+        res.status(200).json({ message: 'Mood deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
 });
 
 
