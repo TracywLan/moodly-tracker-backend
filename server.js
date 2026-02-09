@@ -11,7 +11,7 @@ const logger = require('morgan');
 // Import routers
 const authRouter = require('./controllers/auth');
 const usersRouter = require('./controllers/users');
-const moodsController = require('./controllers/moods');
+const moodsController = require('./controllers/mood');
 require('./middleware/connection');
 
 
@@ -22,7 +22,6 @@ app.use(logger('dev'));
 
 // Routes
 app.use('/auth', authRouter);
-// app.use('/test-jwt', testJwtRouter);
 app.use('/users', usersRouter);
 app.use('/moods', moodsController);
 

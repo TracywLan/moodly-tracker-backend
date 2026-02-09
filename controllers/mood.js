@@ -3,7 +3,7 @@ const Mood = require('../models/mood');
 const router = express.Router();
 const verifyToken = require('../middleware/verify-token');
 
-// GET /hoots/:hootId show
+// GET /moods/:moodId show
 router.get('/:moodId', async (req, res) => {
     try {
        const mood = await Mood.findById(req.params.moodId).populate('author');
@@ -13,7 +13,7 @@ router.get('/:moodId', async (req, res) => {
     }
 })
 
-// PUT /hoots/:hootId update
+// PUT /moods/:moodId update
 router.put('/:moodId', verifyToken, async(req, res) => {
     try {
         const mood = await Mood.findById(req.params.moodId);
@@ -36,7 +36,7 @@ router.put('/:moodId', verifyToken, async(req, res) => {
 })
 
 
-// DELETE /hoots/:hootId
+// DELETE /mood/:moodId
 router.delete('/:moodId', async (req, res) => {
     try {
     await Mood.findByIdAndDelete(req, params.moodId);
@@ -48,8 +48,10 @@ router.delete('/:moodId', async (req, res) => {
 
 
 
+// POST /moods/:moodId/comments
 
+// PUT /moods/:moodId/comments/:commentId
 
-
+// DELETE /moods/:moodId/comments/:commentId
 
 module.exports = router
