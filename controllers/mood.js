@@ -73,6 +73,13 @@ router.put('/:moodId', verifyToken, async(req, res) => {
 // DELETE /mood/:moodId
 router.delete('/:moodId', verifyToken, async (req, res) => {
     try {
+<<<<<<< create-show
+    await Mood.findByIdAndDelete(req.params.moodId);
+    res.redirect('/moods');
+} catch (err) {
+    res.redirect('/moods')
+}
+=======
 
         const mood = await Mood.findById(req.params.moodId);
 
@@ -91,12 +98,43 @@ router.delete('/:moodId', verifyToken, async (req, res) => {
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
+>>>>>>> main
 });
 
 
 
 // POST /moods/:moodId/comments
+router.post("/:moodId/comments", verifyToken, async (req,res) => {
+    try {
+        const { text } = req.body;
+        
+        if(!text || text.trim() === "") {
+            return res.status(400).json({ error: "Comment text is required"})
+        } 
 
+        const mood = await Mood.findById(req.params.moodId);
+
+        if(!mood) {
+            return res.status(404).json({ error: "Mood not found" })
+        }
+
+        mood.comments.push({
+            text,
+            author: req.user._id
+        })
+
+        await mood.save();
+
+        const populatedMood = await Mood.findById(mood._id)
+        .populate("author")
+        .populate("comments.author");
+
+        res.status(201).json(populatedMood)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: error.message })        
+    }
+})
 // PUT /moods/:moodId/comments/:commentId
 router.put('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
     try {
