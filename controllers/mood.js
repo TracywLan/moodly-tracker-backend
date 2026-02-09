@@ -39,7 +39,7 @@ router.post('/', verifyToken, async (req,res) => {
 router.get('/:moodId', async (req, res) => {
     try {
        const mood = await Mood.findById(req.params.moodId).populate('author');
-       res.status(200).json(hoot);
+       res.status(200).json(mood);
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
@@ -50,7 +50,7 @@ router.put('/:moodId', verifyToken, async(req, res) => {
     try {
         const mood = await Mood.findById(req.params.moodId);
 
-        if(!hoot.author.equals(req.user._id)) {
+        if(!mood.author.equals(req.user._id)) {
             return res.status(403).send('You are not allowed to do that')
         }
 
@@ -71,7 +71,7 @@ router.put('/:moodId', verifyToken, async(req, res) => {
 // DELETE /mood/:moodId
 router.delete('/:moodId', async (req, res) => {
     try {
-    await Mood.findByIdAndDelete(req, params.moodId);
+    await Mood.findByIdAndDelete(req.params.moodId);
     res.redirect('/moods');
 } catch (err) {
     res.redirect('/moods')
@@ -81,7 +81,37 @@ router.delete('/:moodId', async (req, res) => {
 
 
 // POST /moods/:moodId/comments
+router.post("/:moodId/comments", verifyToken, async (req,res) => {
+    try {
+        const { text } = req.body;
+        
+        if(!text || text.trim() === "") {
+            return res.status(400).json({ error: "Comment text is required"})
+        } 
 
+        const mood = await Mood.findById(req.params.moodId);
+
+        if(!mood) {
+            return res.status(404).json({ error: "Mood not found" })
+        }
+
+        mood.comments.push({
+            text,
+            author: req.user._id
+        })
+
+        await mood.save();
+
+        const populatedMood = await Mood.findById(mood._id)
+        .populate("author")
+        .populate("comments.author");
+
+        res.status(201).json(populatedMood)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: error.message })        
+    }
+})
 // PUT /moods/:moodId/comments/:commentId
 
 // DELETE /moods/:moodId/comments/:commentId
