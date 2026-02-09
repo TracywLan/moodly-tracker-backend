@@ -80,19 +80,9 @@ router.delete('/:moodId', verifyToken, async (req, res) => {
             return res.status(404).json({ err:'Mood not found' })
         }
 
-        // --- DEBUG SECTION (Now placed BEFORE the check) ---
-        console.log('--- DEBUGGING AUTH ---');
-        console.log('1. Mood Author ID:', mood.author);
-        console.log('2. User ID (req.user):', req.user);
-        
-        // SAFEGUARDS: Handle missing IDs gracefully to see what's wrong
-        const authorIdString = mood.author ? mood.author.toString() : 'MISSING_AUTHOR';
-        const userIdString = req.user && req.user._id ? req.user._id.toString() : 'MISSING_USER_ID';
-        
-        console.log(`3. Comparing: "${authorIdString}" vs "${userIdString}"`);
 
         if(!req.user || !mood.author.equals(req.user._id)) {
-            return res.status(403).send('Unauthorized');
+            return res.status(403).json({ message:'You are not authorized!' });
         }
 
         await mood.deleteOne();
@@ -108,7 +98,34 @@ router.delete('/:moodId', verifyToken, async (req, res) => {
 // POST /moods/:moodId/comments
 
 // PUT /moods/:moodId/comments/:commentId
+router.put('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
+    try {
+        const mood = await Mood.findById(req.params.moodId);
+
+        if(!mood) {
+            return res.status(404).json({ err: 'Mood not found' });
+        }
+
+        const comment = mood.comments.id(req.params.commentId);
+
+        if(!comment) {
+            return res.status(404).json({ err: 'Comment not found' });
+        }
+        
+        if (comment.author.toString() !== req.user._id)
+            return res.status(403).json({ message:'You are not authorized to edit this comment!' });
+        
+        comment.text = req.body.text;
+        await mood.save();
+        
+        res.status(200).json({ message: 'Comment updated successfully' })
+    } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+})
 
 // DELETE /moods/:moodId/comments/:commentId
+
+router.delete {'/:moodId/comments '}
 
 module.exports = router
