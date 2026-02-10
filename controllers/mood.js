@@ -27,6 +27,7 @@ router.post('/', verifyToken, async (req, res) => {
             author:req.user._id,
         }
         const newMood = await Mood.create(moodData)
+        await newMood.populate('author');
 
         res.status(201).json(newMood);
     } catch (error) {
@@ -52,8 +53,12 @@ router.put('/:moodId', verifyToken, async(req, res) => {
     try {
         const mood = await Mood.findById(req.params.moodId);
 
+        if (!mood) {
+            return res.status(404).json({ error: 'Mood not found' })
+        }
+
         if(!mood.author.equals(req.user._id)) {
-            return res.status(403).send('You are not allowed to do that')
+            return res.status(403).json('You are not allowed to do that')
         }
 
         const updatedMood = await Mood.findByIdAndUpdate(
@@ -61,7 +66,7 @@ router.put('/:moodId', verifyToken, async(req, res) => {
             req.body,
             { new:true }
         );
-        updatedMood._doc.author = req.author;
+        updatedMood._doc.author = req.user;
 
         res.status(200).json(updatedMood)
     } catch (err) {
@@ -126,7 +131,9 @@ router.post("/:moodId/comments", verifyToken, async (req,res) => {
         console.log(error)
         res.status(500).json({ error: error.message })        
     }
-})
+});
+
+
 // PUT /moods/:moodId/comments/:commentId
 router.put('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
     try {
@@ -142,8 +149,9 @@ router.put('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
             return res.status(404).json({ err: 'Comment not found' });
         }
         
-        if (comment.author.toString() !== req.user._id)
-            return res.status(403).json({ message:'You are not authorized to edit this comment!' });
+        if (comment.author.toString() !== req.user._id) {
+            return res.status(403).json({ message: 'You are not authorized to edit this comment!' });
+        }
         
         comment.text = req.body.text;
         await mood.save();
@@ -155,7 +163,6 @@ router.put('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
 })
 
 // DELETE /moods/:moodId/comments/:commentId
-
 router.delete('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
     try {
 
@@ -172,7 +179,7 @@ router.delete('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
         }
 
         if(comment.author.toString() !== req.user._id) {
-            return res.status(403).json({ message:'You are not authorized to edit this comment' });
+            return res.status(403).json({ message:'You are not authorized to delete this comment' });
         }
 
         mood.comments.pull(req.params.commentId);
