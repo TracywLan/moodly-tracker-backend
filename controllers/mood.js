@@ -27,6 +27,7 @@ router.post('/', verifyToken, async (req, res) => {
             author:req.user._id,
         }
         const newMood = await Mood.create(moodData)
+        await newMood.populate('author')
 
         res.status(201).json(newMood);
     } catch (error) {
@@ -60,8 +61,8 @@ router.put('/:moodId', verifyToken, async(req, res) => {
             req.params.moodId,
             req.body,
             { new:true }
-        );
-        updatedMood._doc.author = req.author;
+        ).populate('author');
+        updatedMood._doc.author = req.user;
 
         res.status(200).json(updatedMood)
     } catch (err) {
