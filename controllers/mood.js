@@ -65,7 +65,7 @@ router.put('/:moodId', verifyToken, async(req, res) => {
             req.params.moodId,
             req.body,
             { new:true }
-        );
+        ).populate('author');
         updatedMood._doc.author = req.user;
 
         res.status(200).json(updatedMood)
