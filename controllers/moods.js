@@ -15,6 +15,18 @@ router.get('/community',verifyToken, async (req,res) => {
         res.status(500).json({error:error.mesage})
     }
 })
+//Author Info GET
+router.get('/users/:userId', verifyToken, async (req, res) => {
+  try {
+    const moods = await Mood.find({ author: req.params.userId })
+      .populate('author')
+      .sort({ createdAt: -1 });
+
+    res.json(moods);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 //INDEX /moods
 router.get('/', verifyToken, async (req, res)=> {
     try {
