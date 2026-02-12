@@ -39,7 +39,7 @@ router.post('/', verifyToken, async (req, res) => {
 // GET /moods/:moodId show
 router.get('/:moodId', async (req, res) => {
     try {
-        const mood = await Mood.findById(req.params.moodId).populate('author');
+        const mood = await Mood.findById(req.params.moodId).populate('author').populate("comments.author");
         res.status(200).json(mood);
     } catch (err) {
         res.status(500).json({ err: err.message });
@@ -60,8 +60,8 @@ router.put('/:moodId', verifyToken, async(req, res) => {
             req.params.moodId,
             req.body,
             { new:true }
-        );
-        updatedMood._doc.author = req.author;
+        ).populate('author');
+        updatedMood._doc.author = req.user;
 
         res.status(200).json(updatedMood)
     } catch (err) {
@@ -150,7 +150,8 @@ router.put('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
         comment.text = req.body.text;
         await mood.save();
         
-        res.status(200).json({ message: 'Comment updated successfully' })
+        const updatedMood = await Mood.findById(req.params.moodId).populate("author").populate("comments.author")
+        res.json(updatedMood)
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
@@ -180,7 +181,7 @@ router.delete('/:moodId/comments/:commentId', verifyToken, async (req, res) => {
         mood.comments.pull(req.params.commentId);
         await mood.save();
 
-        res.status(200).json({ message: 'Comment deleted successfully' });
+        res.status(200).json(mood);
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
