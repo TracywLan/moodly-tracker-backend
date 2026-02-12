@@ -12,7 +12,6 @@ const logger = require('morgan');
 const authRouter = require('./controllers/auth');
 const usersRouter = require('./controllers/users');
 const moodRouter = require('./controllers/moods');
-// const calendarRouter = require('./controllers/calendar')
 require('./middleware/connection')
 
 
@@ -26,7 +25,7 @@ app.use(logger('dev'));
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/moods', moodRouter);
-// app.use('/calendar', calendarRouter);
+
 
 // Start the server and listen on port 3000
 app.listen(3000, () => {
