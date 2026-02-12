@@ -7,7 +7,7 @@ router.get('/', async (req, res)=> {
         const moods = await Mood.find({})
         .populate("author")
         .populate("comments.author")
-        .populate("createdAt: -1");
+        .sort({ createdAt: -1 });
 
         res.json(moods)
     } catch (error) {
