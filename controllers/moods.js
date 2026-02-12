@@ -3,7 +3,18 @@ const Mood = require('../models/mood');
 const router = express.Router();
 const verifyToken = require('../middleware/verify-token');
 
+//GET /moods/community
+router.get('/community',verifyToken, async (req,res) => {
+    try {
+        const moods = await Mood.find({})
+        .populate('author')
+        .sort({createdAt: -1})
 
+        res.json(moods)
+    } catch (error) {
+        res.status(500).json({error:error.mesage})
+    }
+})
 //INDEX /moods
 router.get('/', verifyToken, async (req, res)=> {
     try {
