@@ -12,6 +12,7 @@ const logger = require('morgan');
 const authRouter = require('./controllers/auth');
 const usersRouter = require('./controllers/users');
 const moodRouter = require('./controllers/moods');
+const communityRouter = require('./controllers/community')
 require('./middleware/connection')
 
 
@@ -25,6 +26,7 @@ app.use(logger('dev'));
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/moods', moodRouter);
+app.use('/community', communityRouter);
 
 
 // Start the server and listen on port 3000
