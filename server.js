@@ -17,7 +17,9 @@ require('./middleware/connection')
 
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 app.use(logger('dev'));
@@ -30,6 +32,7 @@ app.use('/community', communityRouter);
 
 
 // Start the server and listen on port 3000
-app.listen(3000, () => {
-  console.log('The express app is ready!');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
