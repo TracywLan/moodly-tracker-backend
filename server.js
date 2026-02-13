@@ -1,6 +1,6 @@
 // npm
 const dotenv = require('dotenv');
-dotenv.config();
+dotenv.config(); 
 const express = require('express');
 const app = express();
 
@@ -13,6 +13,7 @@ const authRouter = require('./controllers/auth');
 const usersRouter = require('./controllers/users');
 const moodRouter = require('./controllers/moods');
 const communityRouter = require('./controllers/community')
+const PORT = process.env.PORT || 3000;
 require('./middleware/connection')
 
 
@@ -32,7 +33,12 @@ app.use('/community', communityRouter);
 
 
 // Start the server and listen on port 3000
+<<<<<<< Updated upstream
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+=======
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+>>>>>>> Stashed changes
 });
